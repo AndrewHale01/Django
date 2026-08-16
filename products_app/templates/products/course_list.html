@@ -1,0 +1,26 @@
+{% extends 'products/layout.html' %}
+
+{% block content %}
+<h1>Курси</h1>
+
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for course in courses %}
+
+  <div class="col">
+  <a href="{% url 'course_detail' course.id %}">
+    <div class="card h-100">
+      
+        <img class="card-img-top" src="{{ course.image }}" alt="{{ course.title }}">
+      <div class="card-body">
+        <h5 class="card-title">{{ course.title }}</h5>
+        <p class="card-text">{{ course.description }}</p>
+        <p class="card-text"><strong>Ціна: {{ course.price }} грн</strong></p>
+      </div>
+    </div>
+  </a>
+  </div>
+
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -25,7 +28,8 @@ SECRET_KEY = 'django-insecure-f%p2um24-^$sanh2cy0lcp1pxdw+#3ki7h&u6)$#m)jsdlddu3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '*']
+
 
 
 # Application definition
@@ -37,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'products_app', 
+
 ]
 
 MIDDLEWARE = [
@@ -98,6 +104,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+STATIC_LOCATION = "static"
+MEDIA_LOCATION = "media"
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
