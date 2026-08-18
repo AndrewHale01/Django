@@ -1,17 +1,23 @@
-from django.http import Http404
-from django.shortcuts import render
-
-courses = [
-    {'id': 1, 'title': 'Python for Beginners', 'description': 'Learn Python from scratch.', 'price': 49.99, 'image': 'https://m.media-amazon.com/images/I/317ToGD2FRL._SX342_SY445_ML2_.jpg'},
-    {'id': 2, 'title': 'Django Web Development', 'description': 'Build web applications using Django.', 'price': 79.99, 'image': 'https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1659231847i/61790506.jpg'},
-    {'id': 3, 'title': 'Data Science with Python', 'description': 'Analyze data and build machine learning models.', 'price': 99.99, 'image': 'https://www.wiley.com/storefront-pdp-assets/_next/image?url=https%3A%2F%2Fmedia.wiley.com%2Fproduct_data%2FcoverImage300%2F68%2F11195268%2F1119526868.jpg&w=640&q=75'},
-]
+from django.shortcuts import render, get_object_or_404
+from .models import Course
 
 def course_list(request):
+    courses = Course.objects.all()
     return render(request, 'products/course_list.html', {'courses': courses})
 
 def course_detail(request, pk):
-    course = next((c for c in courses if c['id'] == pk), None)
-    if course is None:
-        raise Http404('Course not found')
+    course = get_object_or_404(Course, pk=pk)
+    
+    history = request.session.get('viewed_courses', [])
+    if pk not in history:
+        history.append(pk)
+        request.session['viewed_courses'] = history
+        request.session.modified = True
+        
     return render(request, 'products/course_detail.html', {'course': course})
+
+def view_history(request):
+
+    history_ids = request.session.get('viewed_courses', [])
+    viewed_courses = Course.objects.filter(id__in=history_ids)
+    return render(request, 'products/view_history.html', {'courses': viewed_courses})
