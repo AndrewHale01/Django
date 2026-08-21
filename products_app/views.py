@@ -22,6 +22,65 @@ def view_history(request):
     viewed_courses = Course.objects.filter(id__in=history_ids)
     return render(request, 'products/view_history.html', {'courses': viewed_courses})
 
+def favorites(request):
+    favorite_ids = request.session.get('favorite_courses', [])
+    courses = Course.objects.filter(id__in=favorite_ids)
+    return render(request, 'products/favorites.html', {'courses': courses})
+
+@require_http_methods(["POST"])
+def toggle_favorite(request, pk):
+    get_object_or_404(Course, pk=pk)
+    favorite_ids = request.session.get('favorite_courses', [])
+    if pk in favorite_ids:
+        favorite_ids.remove(pk)
+    else:
+        favorite_ids.append(pk)
+    request.session['favorite_courses'] = favorite_ids
+    request.session.modified = True
+    return redirect(request.POST.get('next', 'index'))
+
+@require_http_methods(["POST"])
+def add_to_cart(request, pk):
+    get_object_or_404(Course, pk=pk)
+    cart_ids = request.session.get('cart_courses', [])
+    if pk not in cart_ids:
+        cart_ids.append(pk)
+    request.session['cart_courses'] = cart_ids
+    request.session.modified = True
+    return redirect(request.POST.get('next', 'index'))
+
+@require_http_methods(["POST"])
+def remove_from_cart(request, pk):
+    cart_ids = request.session.get('cart_courses', [])
+    if pk in cart_ids:
+        cart_ids.remove(pk)
+        request.session['cart_courses'] = cart_ids
+        request.session.modified = True
+    return redirect(request.POST.get('next', 'index'))
+
+@require_http_methods(["GET"])
+def cart(request):
+    cart_ids = request.session.get('cart_courses', [])
+    courses = Course.objects.filter(id__in=cart_ids)
+    return render(request, 'products/cart.html', {'courses': courses})
+
+@require_http_methods(["POST"])
+def clear_cart(request):
+    request.session['cart_courses'] = []
+    request.session.modified = True
+    return redirect('cart')
+
+@require_http_methods(["POST"])
+def checkout(request):
+    if not request.session.get('cart_courses', []):
+        return redirect('cart')
+    request.session['cart_courses'] = []
+    request.session.modified = True
+    return render(request, 'products/checkout_success.html')
+
+def about(request):
+    return render(request, 'products/about.html')
+
 def admin_panel(request):
     if not request.user.is_staff:
         return redirect('index')

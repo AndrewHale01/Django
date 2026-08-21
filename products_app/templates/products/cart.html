@@ -1,0 +1,63 @@
+{% extends 'products/layout.html' %}
+
+{% block content %}
+<div class="cart-page py-3">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">Ваш кошик</h1>
+      <p class="text-muted mb-0">Перевірте курси перед оформленням.</p>
+    </div>
+    <i class="bi bi-basket3 cart-heading-icon" aria-hidden="true"></i>
+  </div>
+
+  {% if courses %}
+  <div class="row g-4 align-items-start">
+    <div class="col-lg-8">
+      {% for course in courses %}
+      <div class="cart-product d-flex align-items-center gap-3 mb-3 p-3 shadow-sm">
+        {% if course.image %}
+        <img src="{{ course.image }}" alt="{{ course.title }}">
+        {% endif %}
+        <div class="flex-grow-1">
+          <a href="{% url 'course_detail' course.id %}" class="h5 text-decoration-none text-dark">{{ course.title }}</a>
+          <p class="text-muted small mb-0">{{ course.description|truncatewords:15 }}</p>
+        </div>
+        <strong class="text-primary text-nowrap">{{ course.price }} грн</strong>
+        <form method="post" action="{% url 'remove_from_cart' course.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-outline-danger btn-sm" title="Прибрати з кошика"><i class="bi bi-trash"></i></button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="col-lg-4">
+      <div class="cart-summary p-4 shadow-sm">
+        <h2 class="h5 fw-bold">Підсумок</h2>
+        <div class="d-flex justify-content-between text-muted mb-3">
+          <span>Курсів</span><span>{{ cart_count }}</span>
+        </div>
+        <div class="d-flex justify-content-between border-top pt-3 mb-4">
+          <strong>До сплати</strong><strong class="text-primary">{{ cart_total }} грн</strong>
+        </div>
+        <form method="post" action="{% url 'checkout' %}" class="mb-2">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary w-100">Оформити замовлення</button>
+        </form>
+        <form method="post" action="{% url 'clear_cart' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link text-danger w-100">Очистити кошик</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="cart-empty text-center p-5 shadow-sm">
+    <i class="bi bi-basket3"></i>
+    <h2 class="h4 mt-3">Кошик порожній</h2>
+    <p class="text-muted">Додайте курс із каталогу, щоб він з’явився тут.</p>
+    <a href="{% url 'index' %}" class="btn btn-primary rounded-pill">Перейти до каталогу</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

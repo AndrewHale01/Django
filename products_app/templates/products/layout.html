@@ -89,8 +89,8 @@
 
             <li class="nav-item">
               <a
-                class="nav-link text-secondary fw-medium"
-                href="#"
+                class="nav-link {% block active_about %}text-secondary fw-medium{% endblock %}"
+                href="{% url 'about' %}"
               >
                 Про нас
               </a>
@@ -100,20 +100,39 @@
 
           <div class="d-flex align-items-center gap-3">
 
-            <a
-              class="btn btn-light position-relative p-2 rounded-circle"
-              href="#"
-              title="Кошик"
-            >
-              <i class="bi bi-basket3 fs-5 text-dark"></i>
-
-              <span
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger small"
-                style="font-size: 0.65rem;"
-              >
-                0
-              </span>
+            <a class="btn btn-light position-relative p-2 rounded-circle" href="{% url 'favorites' %}" title="Улюблені курси">
+              <i class="bi bi-heart-fill fs-5 text-danger"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger small">{{ favorite_count }}</span>
             </a>
+
+            <div class="dropdown">
+              <button class="btn btn-light position-relative p-2 rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Кошик">
+                <i class="bi bi-basket3 fs-5 text-dark"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger small">{{ cart_count }}</span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end p-3 cart-menu">
+                <h6 class="dropdown-header px-0">Кошик</h6>
+                {% for course in cart_courses %}
+                <div class="cart-item d-flex align-items-center gap-2 py-2 border-bottom">
+                  <span class="small flex-grow-1">{{ course.title }}</span>
+                  <form method="post" action="{% url 'remove_from_cart' course.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-sm text-danger p-0" title="Прибрати з кошика"><i class="bi bi-x-lg"></i></button>
+                  </form>
+                </div>
+                {% empty %}
+                <p class="small text-muted mb-0 px-2">Кошик поки порожній.</p>
+                {% endfor %}
+                {% if cart_courses %}
+                <div class="d-flex justify-content-between fw-bold pt-3 mb-2">
+                  <span>Разом:</span>
+                  <span>{{ cart_total }} грн</span>
+                </div>
+                <a href="{% url 'cart' %}" class="btn btn-primary btn-sm w-100">Відкрити кошик</a>
+                {% endif %}
+              </div>
+            </div>
 
             {% if user.is_staff %}
             <a

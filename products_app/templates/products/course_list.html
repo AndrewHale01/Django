@@ -9,6 +9,13 @@
   {% for course in courses %}
   <div class="col">
     <div class="card h-100 position-relative">
+      <form method="post" action="{% url 'toggle_favorite' course.id %}" class="favorite-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="favorite-button {% if course.id in favorite_course_ids %}is-favorite{% endif %}" title="Додати в улюблені" aria-label="Додати в улюблені">
+          <i class="bi {% if course.id in favorite_course_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+        </button>
+      </form>
       <img class="card-img-top" src="{{ course.image }}" alt="{{ course.title }}">
       <div class="card-body">
         <h5 class="card-title">
@@ -18,9 +25,13 @@
         </h5>
         <p class="card-text text-decoration-none text-dark">{{ course.description }}</p>
         <p class="card-text text-decoration-none text-dark"><strong>Ціна: {{ course.price }} грн</strong></p>
-        <span class="btn btn-primary btn-lg px-4 rounded-pill fs-6">
-          Детальніше
-        </span>
+        <form method="post" action="{% url 'add_to_cart' course.id %}" class="position-relative" style="z-index: 2;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-primary btn-lg px-4 rounded-pill fs-6">
+            <i class="bi bi-cart-plus me-1"></i>До кошика
+          </button>
+        </form>
       </div>
     </div>
   </div>

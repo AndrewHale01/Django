@@ -17,9 +17,22 @@
         <h1 class="fw-bold display-6 mb-3 text-dark">{{ course.title }}</h1>
         <p class="text-muted fs-5 mb-4">{{ course.description }}</p>
         <h3 class="fw-bold text-primary mb-4">Ціна: {{ course.price }} грн</h3>
-        <button class="btn btn-primary btn-lg px-5 rounded-pill fw-medium">
-          <i class="bi bi-cart-plus me-2"></i>Купити курс
-        </button>
+        <div class="d-flex flex-wrap gap-2">
+          <form method="post" action="{% url 'add_to_cart' course.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill fw-medium">
+              <i class="bi bi-cart-plus me-2"></i>До кошика
+            </button>
+          </form>
+          <form method="post" action="{% url 'toggle_favorite' course.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="btn btn-outline-danger btn-lg rounded-pill" title="Додати в улюблені">
+              <i class="bi {% if course.id in favorite_course_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
