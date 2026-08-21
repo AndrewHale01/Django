@@ -1,0 +1,120 @@
+{% extends 'products/layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4">
+                    <h2 class="mb-0 fw-bold">
+                        {% if course %}
+                            <i class="bi bi-pencil-square me-2"></i>Редагування курсу
+                        {% else %}
+                            <i class="bi bi-plus-circle me-2"></i>Додавання нового курсу
+                        {% endif %}
+                    </h2>
+                </div>
+
+                <div class="card-body p-5">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-semibold">Назва курсу *</label>
+                            <input 
+                                type="text" 
+                                class="form-control form-control-lg" 
+                                id="title" 
+                                name="title" 
+                                value="{% if course %}{{ course.title }}{% endif %}"
+                                placeholder="Введіть назву курсу"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-semibold">Опис</label>
+                            <textarea 
+                                class="form-control form-control-lg" 
+                                id="description" 
+                                name="description" 
+                                rows="5"
+                                placeholder="Введіть опис курсу"
+                            >{% if course %}{{ course.description }}{% endif %}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="price" class="form-label fw-semibold">Ціна (грн) *</label>
+                                <input 
+                                    type="number" 
+                                    class="form-control form-control-lg" 
+                                    id="price" 
+                                    name="price" 
+                                    step="0.01"
+                                    value="{% if course %}{{ course.price }}{% endif %}"
+                                    placeholder="0.00"
+                                    required
+                                >
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="image" class="form-label fw-semibold">Посилання на зображення</label>
+                                <input 
+                                    type="url" 
+                                    class="form-control form-control-lg" 
+                                    id="image" 
+                                    name="image" 
+                                    value="{% if course %}{{ course.image }}{% endif %}"
+                                    placeholder="https://example.com/image.jpg"
+                                >
+                            </div>
+                        </div>
+
+                        {% if course and course.image %}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Попередній перегляд зображення</label>
+                            <div class="text-center">
+                                <img src="{{ course.image }}" alt="{{ course.title }}" 
+                                     style="max-height: 200px; max-width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex gap-3 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 fw-semibold">
+                                {% if course %}
+                                    <i class="bi bi-check-circle me-2"></i>Оновити
+                                {% else %}
+                                    <i class="bi bi-plus-circle me-2"></i>Додати
+                                {% endif %}
+                            </button>
+                            <a href="{% url 'admin_panel' %}" class="btn btn-outline-secondary btn-lg px-5 fw-semibold">
+                                <i class="bi bi-x-circle me-2"></i>Скасувати
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-control-lg {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-control:focus, .form-control-lg:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .card-header {
+        border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+    }
+</style>
+{% endblock %}

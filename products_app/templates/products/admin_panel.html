@@ -1,0 +1,92 @@
+{% extends 'products/layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">Панель адміністратора</h1>
+            <p class="text-muted">Управління курсами</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'course_add' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Додати курс
+            </a>
+        </div>
+    </div>
+
+    {% if courses %}
+    <div class="table-responsive shadow-sm rounded-3 overflow-hidden">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center">Id</th>
+                    <th>Зображення</th>
+                    <th>Назва</th>
+                    <th>Опис</th>
+                    <th>Ціна</th>
+                    <th>Дата створення</th>
+                    <th class="text-center">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td class="text-center text-muted">{{ forloop.counter }}</td>
+                    <td>
+                        {% if course.image %}
+                            <img src="{{ course.image }}" alt="{{ course.title }}" 
+                                 style="height: 50px; width: 50px; object-fit: cover; border-radius: 5px;">
+                        {% else %}
+                            <span class="text-muted">Немає</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-semibold">
+                        <a href="{% url 'course_detail' course.id %}" class="text-decoration-none text-primary">
+                            {{ course.title }}
+                        </a>
+                    </td>
+                    <td class="text-muted" style="max-width: 300px;">
+                        {{ course.description|truncatewords:10 }}
+                    </td>
+                    <td class="fw-bold text-success">{{ course.price }} грн</td>
+                    <td class="text-muted small">{{ course.created_at|date:"d.m.Y" }}</td>
+                    <td class="text-center">
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="{% url 'course_edit' course.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>Редагувати
+                            </a>
+                            <form method="post" action="{% url 'course_delete' course.id %}" 
+                                  style="display: inline;" 
+                                  onsubmit="return confirm('Ви впевнені?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>Видалити
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle me-2"></i>
+        Курсів не знайдено. <a href="{% url 'course_add' %}">Додайте перший курс!</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa !important;
+        transition: background-color 0.2s ease;
+    }
+    
+    .btn-group-vertical {
+        width: 100%;
+    }
+</style>
+{% endblock %}

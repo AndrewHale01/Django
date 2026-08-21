@@ -1,5 +1,14 @@
-.card-img-top{
+.card-img-top {
   height: 500px;
   object-fit: contain;
   padding: 10px;
+}
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
